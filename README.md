@@ -1,27 +1,21 @@
-# Multimodal VAE for Single-Cell Omics Data
+# Multimodal VAE for Single-Cell RNA-seq and ATAC-seq Integration
 
-This repository contains a Variational Autoencoder (VAE) implementation for analyzing multimodal single-cell omics data, specifically RNA-seq and ATAC-seq data. The model is designed to learn joint representations of these two modalities and can be used for tasks like data imputation and dimensionality reduction.
+## Project Overview
 
-## Project Structure
+This project implements and evaluates a Multimodal Variational Autoencoder (VAE) designed to integrate single-cell gene expression (RNA-seq) and chromatin accessibility (ATAC-seq) data. The goal is to learn a joint latent representation that captures the shared biological variation across both modalities, enabling tasks like cross-modal imputation and potentially improved cell type identification or trajectory analysis.
 
-- `data/`: Contains data preprocessing scripts and input data
-- `models/`: VAE model implementations
-- `training/`: Training and evaluation scripts
-- `scripts/`: Utility scripts for visualization and analysis
-- `checkpoints/`: Saved model checkpoints
-- `results/`: Output plots and analysis results
-- `runs/`: Training run logs
-- `figures/`: Generated figures and visualizations
+The model utilizes separate encoders for RNA and ATAC data, a fusion network (either MLP-based or Product of Experts) to combine modality-specific information, and separate decoders to reconstruct the original data from the shared latent space.
 
-## Features
+**Key Features:**
 
-- Multimodal VAE implementation for RNA-seq and ATAC-seq data
-- Support for different fusion methods (MLP and Product of Experts)
-- KL divergence annealing 
-- Customizable loss weights for different modalities
-- Model evaluation and imputation capabilities
-- Visualization tools for latent space analysis
-
+*   Handles raw 10x Multiome data input (`filtered_feature_bc_matrix.h5`).
+*   Implements standard preprocessing pipelines for scRNA-seq (Normalization, Log-transform, HVG selection) and scATAC-seq (LSI using SVD directly on filtered count-like data).
+*   Supports two fusion mechanisms:
+    *   MLP Fusion: Concatenates latent means and processes through an MLP.
+    *   Product of Experts (PoE): Mathematically combines modality distributions with a prior.
+*   Utilizes KL Annealing during training to mitigate posterior collapse.
+*   Provides quantitative evaluation of cross-modal imputation using Cosine Similarity and Pearson Correlation.
+*   Includes visualization of the learned latent space (UMAP, Leiden clustering) and imputation quality assessment.
 
 ## Usage
 
@@ -39,23 +33,6 @@ python main.py --data_path data/pbmc_granulocyte_sorted_10k_filtered_feature_bc_
                --kl_warmup_epochs 100
 ```
 
-### Command Line Arguments
-
-- `--data_path`: Path to the preprocessed .h5 data file
-- `--model_name`: Base name for saved model file
-- `--checkpoint_dir`: Directory to save model checkpoints
-- `--vis_output_dir`: Directory to save visualization outputs
-- `--seed`: Random seed for reproducibility
-- `--atac_n_components`: Number of SVD components for ATAC data
-- `--fusion`: Fusion method ('mlp' or 'poe')
-- `--kl_beta_max`: Target maximum beta value for KL annealing
-- `--kl_warmup_epochs`: Number of epochs for KL beta warmup
-- `--kl_anneal_strategy`: KL annealing strategy ('linear' or 'sigmoid')
-- `--test_size`: Proportion of data to use for testing
-- `--epochs`: Number of training epochs
-- `--lr`: Learning rate
-- `--rna_weight`: Weight for RNA reconstruction loss
-- `--atac_weight`: Weight for ATAC reconstruction loss
 
 ## Visualization
 
@@ -66,5 +43,41 @@ python run_visualization.py --model_path checkpoints/vae_model.pt \
                            --data_path data/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5 \
                            --output_dir results/plots
 ```
+## Data
 
 
+Data used can be downloaded from the following link:
+https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-10-k-1-standard-1-0-0
+
+## Results
+
+These are the results for both imputation directions using poe (Product of experts) fusion method for this architecture.
+
+
+--- Evaluation Results (Fusion: POE) ---
+Metric       | RNA -> ATAC | ATAC -> RNA
+-------------|-------------|------------
+Cosine Sim   |      0.7078 |      0.7250
+Pearson Corr |      0.6936 |      0.7039
+----------------------------------------
+
+**Cosine Similarity** measures the angle between the imputed and ground truth vectors in feature space, indicating how well the model preserves the relative directionality of features. Values above 0.70 for both directions suggest the model successfully captures the structure of each modality.
+**Pearson Correlation** quantifies the linear relationship between original and imputed features. The values near 0.70 further validate that the model preserves biologically relevant variation in the latent space and reconstructs meaningful cross-modal signals.
+Overall, these results indicate that the model learned a shared representation capable of generalizing well across modalities.
+
+## Plots
+
+![VAE Latent Space UMAP colored by Leiden Clusters](results/plots/latent_space_umap_annotated.png)
+**Latent Space UMAP (Test Set)**  
+
+This UMAP visualizes the shared latent space (mu_z) learned by the VAE (using PoE fusion ) for the test set cells. Each point represents a single cell. Cells are colored based on the unsupervised Leiden cluster they were assigned to based on their proximity in the high-dimensional latent space. Clear separation between different colored clusters indicates the model successfully grouped cells with similar integrated RNA/ATAC profiles. The spatial arrangement can hint at relationships between cell states or lineages. The quality of separation here suggests the model learned a biologically meaningful representation.
+
+![Original vs Imputed Data UMAP Comparison](results/plots/imputation_comparison_umap.png)
+**Cross-Modal Imputation Comparison**  
+
+This plot provides a qualitative assessment of cross-modal imputation quality. All subplots are colored by the same Leiden cluster assignments derived from the latent space UMAP.
+
+![Marker Gene Dot Plot](results/plots/marker_genes_dotplot.png)
+**Marker Gene Dot Plot**  
+
+This plot highlights potential marker genes that differentiate the Leiden clusters found in the latent space. Columns correspond to Leiden clusters (0–17), while rows show the top differentially expressed genes per cluster. Dot color represents the average expression level among expressing cells, and dot size reflects the fraction of cells in the cluster expressing that gene.
