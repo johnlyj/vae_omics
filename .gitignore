@@ -1,0 +1,27 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*__pycache__/
+
+# Virtual environments
+.env/
+.venv/
+
+# Jupyter Notebook 
+.ipynb_checkpoints/
+
+# HDF5/muon files
+*.h5mu
+*.h5u
+*.h5
+
+# Jupyter notebooks 
+analysis.ipynb
+
+# Output files and checkpoints
+results.txt
+checkpoints/
+runs/
+
+# macOS system file
+.DS_Store
