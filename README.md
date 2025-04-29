@@ -69,17 +69,17 @@ Overall, these results indicate that the model learned a shared representation c
 
 ## Plots
 
-![VAE Latent Space UMAP colored by Leiden Clusters](results/plots/latent_space_umap_annotated.png)
 **Latent Space UMAP (Test Set)**  
+![VAE Latent Space UMAP colored by Leiden Clusters](results/plots/latent_space_umap_annotated.png)
 
 This UMAP visualizes the shared latent space (mu_z) learned by the VAE (using PoE fusion ) for the test set cells. Each point represents a single cell. Cells are colored based on the unsupervised Leiden cluster they were assigned to based on their proximity in the high-dimensional latent space. Clear separation between different colored clusters indicates the model successfully grouped cells with similar integrated RNA/ATAC profiles. The spatial arrangement can hint at relationships between cell states or lineages. The quality of separation here suggests the model learned a biologically meaningful representation.
 
-![Original vs Imputed Data UMAP Comparison](results/plots/imputation_comparison_umap.png)
 **Cross-Modal Imputation Comparison**  
+![Original vs Imputed Data UMAP Comparison](results/plots/imputation_comparison_umap.png)
 
 This plot provides a qualitative assessment of cross-modal imputation quality. All subplots are colored by the same Leiden cluster assignments derived from the latent space UMAP.
 
-![Marker Gene Dot Plot](results/plots/marker_genes_dotplot.png)
 **Marker Gene Dot Plot**  
+![Marker Gene Dot Plot](results/plots/marker_genes_dotplot.png)
 
 This plot highlights potential marker genes that differentiate the Leiden clusters found in the latent space. Columns correspond to Leiden clusters (0–17), while rows show the top differentially expressed genes per cluster. Dot color represents the average expression level among expressing cells, and dot size reflects the fraction of cells in the cluster expressing that gene.
