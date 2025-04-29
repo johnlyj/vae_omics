@@ -62,7 +62,9 @@ Pearson Corr |      0.6936 |      0.7039
 ----------------------------------------
 
 **Cosine Similarity** measures the angle between the imputed and ground truth vectors in feature space, indicating how well the model preserves the relative directionality of features. Values above 0.70 for both directions suggest the model successfully captures the structure of each modality.
+
 **Pearson Correlation** quantifies the linear relationship between original and imputed features. The values near 0.70 further validate that the model preserves biologically relevant variation in the latent space and reconstructs meaningful cross-modal signals.
+
 Overall, these results indicate that the model learned a shared representation capable of generalizing well across modalities.
 
 ## Plots
