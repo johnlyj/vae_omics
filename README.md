@@ -83,3 +83,11 @@ This plot provides a qualitative assessment of cross-modal imputation quality. A
 ![Marker Gene Dot Plot](results/plots/marker_genes_dotplot.png)
 
 This plot highlights potential marker genes that differentiate the Leiden clusters found in the latent space. Columns correspond to Leiden clusters (0–17), while rows show the top differentially expressed genes per cluster. Dot color represents the average expression level among expressing cells, and dot size reflects the fraction of cells in the cluster expressing that gene.
+
+## Future directions
+
+* Hierarchical Latent Structure: Implement multi-level representations to capture both modality-specific and shared biological factors.
+* Attention-Based Fusion: Replace simple fusion with attention mechanisms to dynamically weight feature importance across modalities.
+* Transformer Encoders: Utilize transformer architectures to better capture complex dependencies in genomic data.
+* Prior Knowledge Incorporation: e.g, using ZINB distribution to better model RNA count data.
+* Adversarial Training: Reduce modality-specific technical variations while preserving biological signals.
